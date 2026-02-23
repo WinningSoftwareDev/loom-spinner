@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.0] - Unreleased
+### Added
+- Added new workflow for GitLab.
+
+### Changed
+- Changed vendor namespace to `winningsoftware`.
+
+### Removed
+- Removed GitHub specific workflows.
+
+###
 ## [3.3.0] - 2025-10-26
 ### Changed
 - Improved output when running `spin:down` command.

@@ -2,5 +2,5 @@
 /.idea
 /.DS_Store
 /vendor
-composer.lock
-.php-cs-fixer.cache
+/composer.lock
+/.php-cs-fixer.cache

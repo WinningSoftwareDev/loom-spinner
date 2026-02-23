@@ -2,7 +2,7 @@
 
 <p>
 <!-- Version Badge -->
-<img src="https://img.shields.io/badge/Version-3.3.0-blue" alt="Version 3.3.0">
+<img src="https://img.shields.io/badge/Version-3.4.0-blue" alt="Version 3.4.0">
 <!-- License Badge -->
 <img src="https://img.shields.io/badge/License-GPL--3.0--or--later-40adbc" alt="License GPL-3.0-or-later">
 </p>
@@ -14,8 +14,8 @@ workflow for your projects.
 
 Run simple commands from anywhere on your system to manage your environments.
 
-> This project is built for Linux and has not been fully tested on Windows or MacOS. Full Windows/MacOS support is 
-> planned for a future release.
+> This project is built for Linux and probably won't work on MacOS. I'm 99% certain it won't work on Windows. MacOS/Windows
+> support _may_ be considered in future.
 
 # At a Glance
 
@@ -40,21 +40,17 @@ You can access the container directly from your terminal to run tests or other c
 - Composer
 - Docker Desktop or Docker Engine
 
-To install globally, run:
+In addition, this package uses `mkcert` to create self-signed local SSL certificates. Install it on your system:
 
-```shell
-composer global require cloudbase/loom-spinner
+```bash
+sudo apt update && sudo apt install mkcert libnss3
+mkcert -install
 ```
 
-> **Optional HTTPS/SSL Support**
-> 
-> For prettified `https://{project-name}.app` URLs, install `mkcert` before using Loom Spinner.
-
-Linux example:
+To install Loom Spinner globally, run:
 
 ```shell
-sudo apt install mkcert libnss3-tools
-mkcert -install
+composer global require winningsoftware/loom-spinner
 ```
 
 # Quick Start
@@ -67,7 +63,7 @@ loom spin:up my-project .
 sudo loom env:hosts:add my-project
 ```
 
-> ✅ This will create the Docker containers (PHP, Nginx, MySQL) and ensure your system can resolve http://my-project.app 
+> ✅ This will create the Docker containers (PHP, Nginx, MySQL) and ensure your system can resolve https://my-project.app 
 > for clean URLs.
 
 # Usage
@@ -106,9 +102,6 @@ To see which port your database container is using, run:
 ```shell
 loom env:list
 ```
-
-You can customise your credentials, see the [Configuration](https://github.com/CloudBaseHQ/loom-spinner/wiki/Configuration) 
-section of the documentation for more details.
 
 ## Managing Your Environment
 
