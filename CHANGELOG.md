@@ -2,17 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [3.4.0] - Unreleased
+## [3.4.0] - 2026-03-23
 ### Added
-- Added new workflow for GitLab.
+- Added Mailcatcher container
+- Provide support for HMR
 
-### Changed
-- Changed vendor namespace to `winningsoftware`.
-
-### Removed
-- Removed GitHub specific workflows.
-
-###
 ## [3.3.0] - 2025-10-26
 ### Changed
 - Improved output when running `spin:down` command.
