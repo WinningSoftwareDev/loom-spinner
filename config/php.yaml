@@ -10,6 +10,7 @@ services:
       - host.docker.internal:host-gateway
     ports:
       - ${PHP_PORT}:9003
+      - ${VITE_PORT}:3000
     container_name: ${PROJECT_NAME}-php
     volumes:
       - ${PROJECT_DIRECTORY}:/var/www/html:cached

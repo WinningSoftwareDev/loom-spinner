@@ -11,3 +11,5 @@ options:
       enabled: true
       driver: mysql
       rootPassword: docker
+    mailcatcher:
+      enabled: true

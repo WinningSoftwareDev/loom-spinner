@@ -23,16 +23,21 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     /**
      * @throws \Exception
      */
-    public function build(InputInterface $input): DockerComposeFileBuilder
+    public function build(InputInterface $input): self
     {
         if (!$content = $this->config->getConfigFileContents('php.yaml')) {
-            throw new \Exception('Could not locate default PHP configuration file.');
+            throw new \RuntimeException('Could not locate default PHP configuration file.');
         }
 
         $this->content = $content;
+        $this->content = str_replace('${VITE_PORT}', (string) $this->ports['vite'], $this->content);
 
         if ($this->config->isServerEnabled($input)) {
             $this->addNginxConfig();
+        }
+
+        if ($this->config->isMailcatcherEnabled($input)) {
+            $this->addMailcatcherConfig();
         }
 
         if ($this->config->isDatabaseEnabled($input) && $driver = $this->config->getDatabaseDriver($input)) {
@@ -58,7 +63,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     private function addNginxConfig(): void
     {
         if (!$nginxContent = $this->config->getConfigFileContents('nginx.yaml')) {
-            throw new \Exception('Could not locate the default Nginx configuration file.');
+            throw new \RuntimeException('Could not locate the default Nginx configuration file.');
         }
 
         $this->content .= str_replace(
@@ -79,7 +84,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     private function addSqliteDatabaseConfig(): void
     {
         if (!$sqlLiteConfig = $this->config->getConfigFileContents('sqlite.yaml')) {
-            throw new \Exception('Could not locate the default SQLite configuration file.');
+            throw new \RuntimeException('Could not locate the default SQLite configuration file.');
         }
 
         $sqlLiteConfig = str_replace('volumes:', '', $sqlLiteConfig);
@@ -92,7 +97,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     private function addMysqlDatabaseConfig(): void
     {
         if (!$mysqlConfig = $this->config->getConfigFileContents('mysql.yaml')) {
-            throw new \Exception('Could not locate the default MySQL configuration file.');
+            throw new \RuntimeException('Could not locate the default MySQL configuration file.');
         }
 
         $rootPassword = $this->config->getEnvironmentOption('database', 'rootPassword');
@@ -105,6 +110,21 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
         $mysqlConfig = str_replace('${ROOT_PASSWORD}', $rootPassword, $mysqlConfig);
         $mysqlConfig = str_replace('${DATABASE_PORT}', (string) $this->ports['database'], $mysqlConfig);
         $this->content .= $mysqlConfig;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function addMailcatcherConfig(): void
+    {
+        if (!$mailcatcherConfig = $this->config->getConfigFileContents('mailcatcher.yaml')) {
+            throw new \Exception('Could not locate the default Mailcatcher configuration file.');
+        }
+
+        $mailcatcherConfig = str_replace('services:', '', $mailcatcherConfig);
+        $mailcatcherConfig = str_replace('${MAILCATCHER_SMTP_PORT}', (string) $this->ports['mailcatcher_smtp'], $mailcatcherConfig);
+        $mailcatcherConfig = str_replace('${MAILCATCHER_WEB_PORT}', (string) $this->ports['mailcatcher_web'], $mailcatcherConfig);
+        $this->content .= $mailcatcherConfig;
     }
 
     /**
