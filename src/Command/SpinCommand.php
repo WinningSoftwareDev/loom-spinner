@@ -34,6 +34,7 @@ class SpinCommand extends AbstractSpinnerCommand
         $portGenerator = new PortGenerator();
         $this->ports = [
             'php' => $portGenerator->generateRandomPort(),
+            'vite' => $portGenerator->generateRandomPort(),
             'server' => $portGenerator->generateRandomPort(),
             'database' => $portGenerator->generateRandomPort(),
             'mailcatcher_smtp' => $portGenerator->generateRandomPort(),
@@ -230,7 +231,7 @@ class SpinCommand extends AbstractSpinnerCommand
      */
     private function addToNetwork(InputInterface $input, string $projectName): void
     {
-        (new NginxConfigFileBuilder($this->config, $projectName))
+        (new NginxConfigFileBuilder($this->config, $projectName, $this->ports['vite']))
             ->build($input)
             ->save();
     }
@@ -258,6 +259,7 @@ class SpinCommand extends AbstractSpinnerCommand
                 $projectName,
                 $this->config->getPhpVersion($input),
                 $this->ports['php'],
+                $this->ports['vite'],
                 $this->ports['server'],
                 $this->ports['database'],
                 $rootDatabasePassword,
