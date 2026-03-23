@@ -35,6 +35,10 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
             $this->addNginxConfig();
         }
 
+        if ($this->config->isMailcatcherEnabled($input)) {
+            $this->addMailcatcherConfig();
+        }
+
         if ($this->config->isDatabaseEnabled($input) && $driver = $this->config->getDatabaseDriver($input)) {
             $databaseDriver = strtolower($driver);
 
@@ -105,6 +109,21 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
         $mysqlConfig = str_replace('${ROOT_PASSWORD}', $rootPassword, $mysqlConfig);
         $mysqlConfig = str_replace('${DATABASE_PORT}', (string) $this->ports['database'], $mysqlConfig);
         $this->content .= $mysqlConfig;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function addMailcatcherConfig(): void
+    {
+        if (!$mailcatcherConfig = $this->config->getConfigFileContents('mailcatcher.yaml')) {
+            throw new \Exception('Could not locate the default Mailcatcher configuration file.');
+        }
+
+        $mailcatcherConfig = str_replace('services:', '', $mailcatcherConfig);
+        $mailcatcherConfig = str_replace('${MAILCATCHER_SMTP_PORT}', (string) $this->ports['mailcatcher_smtp'], $mailcatcherConfig);
+        $mailcatcherConfig = str_replace('${MAILCATCHER_WEB_PORT}', (string) $this->ports['mailcatcher_web'], $mailcatcherConfig);
+        $this->content .= $mailcatcherConfig;
     }
 
     /**

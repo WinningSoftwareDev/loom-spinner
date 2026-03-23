@@ -1,0 +1,7 @@
+services:
+  mailcatcher:
+    image: sj26/mailcatcher:latest
+    ports:
+      - ${MAILCATCHER_SMTP_PORT}:1025
+      - ${MAILCATCHER_WEB_PORT}:1080
+    container_name: ${PROJECT_NAME}-mailcatcher

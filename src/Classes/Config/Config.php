@@ -107,6 +107,18 @@ class Config
     /**
      * @throws \Exception
      */
+    public function isMailcatcherEnabled(InputInterface $input): bool
+    {
+        if ($input->getOption('mailcatcher')) {
+            return true;
+        }
+
+        return (bool) $this->getEnvironmentOption('mailcatcher', 'enabled');
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function getDatabaseDriver(InputInterface $input): ?string
     {
         $databaseDriver = $input->getOption('database') ?? null;

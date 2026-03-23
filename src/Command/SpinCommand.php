@@ -22,8 +22,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'spin:up', description: 'Spin up a new development environment')]
 class SpinCommand extends AbstractSpinnerCommand
 {
-    private PortGenerator $portGenerator;
-
     /**
      * @var array<string, int>
      */
@@ -33,11 +31,13 @@ class SpinCommand extends AbstractSpinnerCommand
 
     public function __construct()
     {
-        $this->portGenerator = new PortGenerator();
+        $portGenerator = new PortGenerator();
         $this->ports = [
-            'php' => $this->portGenerator->generateRandomPort(),
-            'server' => $this->portGenerator->generateRandomPort(),
-            'database' => $this->portGenerator->generateRandomPort(),
+            'php' => $portGenerator->generateRandomPort(),
+            'server' => $portGenerator->generateRandomPort(),
+            'database' => $portGenerator->generateRandomPort(),
+            'mailcatcher_smtp' => $portGenerator->generateRandomPort(),
+            'mailcatcher_web' => $portGenerator->generateRandomPort(),
         ];
 
         parent::__construct();
@@ -84,7 +84,8 @@ class SpinCommand extends AbstractSpinnerCommand
                 'Set this flag to not include a database for your environment.'
             )
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The type of database to use (e.g., mysql, sqlite).', null, ['mysql', 'sqlite'])
-            ->addOption('node', null, InputOption::VALUE_OPTIONAL, 'The Node.js version to use (e.g. 20).');
+            ->addOption('node', null, InputOption::VALUE_OPTIONAL, 'The Node.js version to use (e.g. 20).')
+            ->addOption('mailcatcher', null, InputOption::VALUE_NONE, 'Set this flag to include Mailcatcher for your environment.');
     }
 
     /**
@@ -188,6 +189,8 @@ class SpinCommand extends AbstractSpinnerCommand
             ));
         }
 
+        exec(sprintf('docker exec -it %s-php mkdir -p /etc/nginx && docker cp loom-spinner-reverse-proxy:/etc/nginx/certs/ /tmp/certs && docker cp /tmp/certs/ %s-php:/etc/nginx/certs/', $projectName, $projectName));
+
         return Command::SUCCESS;
     }
 
@@ -257,7 +260,9 @@ class SpinCommand extends AbstractSpinnerCommand
                 $this->ports['php'],
                 $this->ports['server'],
                 $this->ports['database'],
-                $rootDatabasePassword
+                $rootDatabasePassword,
+                $this->ports['mailcatcher_smtp'],
+                $this->ports['mailcatcher_web']
             )
         );
     }
