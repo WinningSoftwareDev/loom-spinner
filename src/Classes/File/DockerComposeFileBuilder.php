@@ -40,6 +40,8 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
             $this->addMailcatcherConfig();
         }
 
+        $volumes = '';
+
         if ($this->config->isDatabaseEnabled($input) && $driver = $this->config->getDatabaseDriver($input)) {
             $databaseDriver = strtolower($driver);
 
@@ -51,14 +53,19 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
                 $this->addMysqlDatabaseConfig();
             }
 
-            if ($this->config->isRabbitMQEnabled($input)) {
-                $this->addRabbitMQConfig();
-            }
-
-            $this->content .= "\n\nvolumes:\n  rabbitmq_data:\n  mysql_data:\n\n";
-
-            $this->addNetworks();
+            $volumes .= "\n mysql_data:";
         }
+
+        if ($this->config->isRabbitMQEnabled($input)) {
+            $this->addRabbitMQConfig();
+            $volumes .= "\n rabbitmq_data:";
+        }
+
+        if (!empty($volumes)) {
+            $this->content .= "\n\nvolumes:" . $volumes . "\n\n";
+        }
+
+        $this->addNetworks();
 
         return $this;
     }
