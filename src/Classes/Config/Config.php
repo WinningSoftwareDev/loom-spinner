@@ -119,6 +119,32 @@ class Config
     /**
      * @throws \Exception
      */
+    public function isRabbitMQEnabled(InputInterface $input): bool
+    {
+        if ($input->getOption('rabbitmq')) {
+            return true;
+        }
+
+        return (bool) $this->getEnvironmentOption('rabbitmq', 'enabled');
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getRabbitMQManagementPort(InputInterface $input): ?int
+    {
+        $managementPort = $this->getEnvironmentOption('rabbitmq', 'managementPort');
+
+        if (is_numeric($managementPort)) {
+            return (int) $managementPort;
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function getDatabaseDriver(InputInterface $input): ?string
     {
         $databaseDriver = $input->getOption('database') ?? null;

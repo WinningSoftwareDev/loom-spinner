@@ -13,3 +13,6 @@ options:
       rootPassword: docker
     mailcatcher:
       enabled: true
+    rabbitmq:
+      enabled: true
+      managementPort: 15672

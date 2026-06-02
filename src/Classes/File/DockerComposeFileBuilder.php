@@ -51,6 +51,12 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
                 $this->addMysqlDatabaseConfig();
             }
 
+            if ($this->config->isRabbitMQEnabled($input)) {
+                $this->addRabbitMQConfig();
+            }
+
+            $this->content .= "\n\nvolumes:\n  rabbitmq_data:\n  mysql_data:\n\n";
+
             $this->addNetworks();
         }
 
@@ -125,6 +131,21 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
         $mailcatcherConfig = str_replace('${MAILCATCHER_SMTP_PORT}', (string) $this->ports['mailcatcher_smtp'], $mailcatcherConfig);
         $mailcatcherConfig = str_replace('${MAILCATCHER_WEB_PORT}', (string) $this->ports['mailcatcher_web'], $mailcatcherConfig);
         $this->content .= $mailcatcherConfig;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function addRabbitMQConfig(): void
+    {
+        if (!$rabbitmqConfig = $this->config->getConfigFileContents('rabbitmq.yaml')) {
+            throw new \Exception('Could not locate the default RabbitMQ configuration file.');
+        }
+
+        $rabbitmqConfig = str_replace('services:', '', $rabbitmqConfig);
+        $rabbitmqConfig = str_replace('${RABBITMQ_PORT}', (string) $this->ports['rabbitmq'], $rabbitmqConfig);
+        $rabbitmqConfig = str_replace('${RABBITMQ_MANAGEMENT_PORT}', (string) $this->ports['rabbitmq_management'], $rabbitmqConfig);
+        $this->content .= $rabbitmqConfig;
     }
 
     /**

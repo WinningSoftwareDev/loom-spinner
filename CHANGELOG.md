@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- Added RabbitMQ support with a RabbitMQ container now being built by default
+
 ## [3.4.0] - 2026-03-23
 ### Added
 - Added Mailcatcher container

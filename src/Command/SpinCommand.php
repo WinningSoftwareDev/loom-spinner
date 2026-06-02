@@ -39,6 +39,8 @@ class SpinCommand extends AbstractSpinnerCommand
             'database' => $portGenerator->generateRandomPort(),
             'mailcatcher_smtp' => $portGenerator->generateRandomPort(),
             'mailcatcher_web' => $portGenerator->generateRandomPort(),
+            'rabbitmq' => $portGenerator->generateRandomPort(),
+            'rabbitmq_management' => $portGenerator->generateRandomPort(),
         ];
 
         parent::__construct();
@@ -86,7 +88,8 @@ class SpinCommand extends AbstractSpinnerCommand
             )
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The type of database to use (e.g., mysql, sqlite).', null, ['mysql', 'sqlite'])
             ->addOption('node', null, InputOption::VALUE_OPTIONAL, 'The Node.js version to use (e.g. 20).')
-            ->addOption('mailcatcher', null, InputOption::VALUE_NONE, 'Set this flag to include Mailcatcher for your environment.');
+            ->addOption('mailcatcher', null, InputOption::VALUE_NONE, 'Set this flag to include Mailcatcher for your environment.')
+            ->addOption('rabbitmq', null, InputOption::VALUE_NONE, 'Set this flag to include RabbitMQ for your environment.');
     }
 
     /**
@@ -264,7 +267,9 @@ class SpinCommand extends AbstractSpinnerCommand
                 $this->ports['database'],
                 $rootDatabasePassword,
                 $this->ports['mailcatcher_smtp'],
-                $this->ports['mailcatcher_web']
+                $this->ports['mailcatcher_web'],
+                $this->ports['rabbitmq'],
+                $this->ports['rabbitmq_management']
             )
         );
     }
