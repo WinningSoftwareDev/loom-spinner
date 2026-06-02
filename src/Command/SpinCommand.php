@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'spin:up', description: 'Spin up a new development environment')]
+#[AsCommand(name: 'spin:up', description: 'Spin up a new named development environment')]
 class SpinCommand extends AbstractSpinnerCommand
 {
     /**
