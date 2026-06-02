@@ -216,11 +216,14 @@ class SpinCommand extends AbstractSpinnerCommand
      */
     private function createProjectDataDirectory(InputInterface $input): void
     {
-        mkdir(
-            $this->config->getDataDirectory(),
-            0777,
-            true
-        );
+        if (
+            !mkdir(
+                directory: $concurrentDirectory = $this->config->getDataDirectory(),
+                recursive: true
+            ) && !is_dir($concurrentDirectory)
+        ) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
         $this->createProjectDataSubDirectory('nginx/conf.d');
     }
 
@@ -291,16 +294,22 @@ class SpinCommand extends AbstractSpinnerCommand
 
     private function createProxyDirectory(): void
     {
-        mkdir(
-            $this->config->getProxyDirectory() . '/conf.d',
-            0777,
-            true
-        );
-        mkdir(
-            $this->config->getProxyDirectory() . '/certs',
-            0777,
-            true
-        );
+        if (
+            !mkdir(
+                directory: $concurrentDirectory = $this->config->getProxyDirectory() . '/conf.d',
+                recursive: true
+            ) && !is_dir($concurrentDirectory)
+        ) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+        if (
+            !mkdir(
+                directory: $concurrentDirectory = $this->config->getProxyDirectory() . '/certs',
+                recursive: true
+            ) && !is_dir($concurrentDirectory)
+        ) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
     }
 
     /**
