@@ -10,14 +10,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
-    private string $spinnerRootPath;
     private string $configDirectory;
     private string $dataDirectory;
 
     public function __construct(string $projectName = '', private readonly ?string $projectWorkPath = null)
     {
-        $this->spinnerRootPath = dirname(__DIR__, 3);
-        $this->configDirectory = sprintf('%s/config', $this->spinnerRootPath);
+        $this->configDirectory = sprintf('%s/config', dirname(__DIR__, 3));
         $this->dataDirectory = sprintf('%s/.spinner/environments/%s', $this->getHomeDirectory(), $projectName);
     }
 

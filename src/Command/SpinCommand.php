@@ -162,7 +162,7 @@ class SpinCommand extends AbstractSpinnerCommand
 
         if ($this->config->isServerEnabled($input)) {
             (new ReverseProxyManager($this->style))->startProxyContainerIfNotRunning();
-            exec('command -v mkcert', $output, $code);
+            exec('command -v mkcert', $op, $code);
             if ($code === 0) {
                 $domain = $projectName . '.app';
                 $certDir = $this->config->getProxyDirectory() . '/certs';
@@ -193,7 +193,9 @@ class SpinCommand extends AbstractSpinnerCommand
             ));
         }
 
-        exec(sprintf('docker exec -it %s-php mkdir -p /etc/nginx && docker cp loom-spinner-reverse-proxy:/etc/nginx/certs/ /tmp/certs && docker cp /tmp/certs/ %s-php:/etc/nginx/certs/', $projectName, $projectName));
+        exec(sprintf('docker exec -it %s-php mkdir -p /etc/nginx/certs', $projectName));
+        exec(sprintf('docker cp %s/%s.key %s-php:/etc/nginx/certs/%s.key', $this->config->getProxyDirectory() . '/certs', $projectName, $projectName, $projectName));
+        exec(sprintf('docker cp %s/%s.crt %s-php:/etc/nginx/certs/%s.crt', $this->config->getProxyDirectory() . '/certs', $projectName, $projectName, $projectName));
 
         return Command::SUCCESS;
     }
