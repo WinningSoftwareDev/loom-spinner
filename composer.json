@@ -1,7 +1,7 @@
 {
   "name": "winningsoftware/loom-spinner",
   "description": "A simple command-line Docker environment spinner for PHP.",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "autoload": {
     "psr-4": {
       "Loom\\Spinner\\": "src/"

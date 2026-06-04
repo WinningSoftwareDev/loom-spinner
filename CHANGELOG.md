@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [3.5.0] - 2026-06-04
 ### Added
 - Added RabbitMQ support with a RabbitMQ container now being built by default
 - Ensure that only the relevant SSL certificate files are copied to the project PHP container
