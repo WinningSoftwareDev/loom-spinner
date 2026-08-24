@@ -41,6 +41,7 @@ class SpinCommand extends AbstractSpinnerCommand
             'mailcatcher_web' => $portGenerator->generateRandomPort(),
             'rabbitmq' => $portGenerator->generateRandomPort(),
             'rabbitmq_management' => $portGenerator->generateRandomPort(),
+            'redis' => $portGenerator->generateRandomPort(),
         ];
 
         parent::__construct();
@@ -89,7 +90,8 @@ class SpinCommand extends AbstractSpinnerCommand
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The type of database to use (e.g., mysql, sqlite).', null, ['mysql', 'sqlite'])
             ->addOption('node', null, InputOption::VALUE_OPTIONAL, 'The Node.js version to use (e.g. 20).')
             ->addOption('mailcatcher', null, InputOption::VALUE_NONE, 'Set this flag to include Mailcatcher for your environment.')
-            ->addOption('rabbitmq', null, InputOption::VALUE_NONE, 'Set this flag to include RabbitMQ for your environment.');
+            ->addOption('rabbitmq', null, InputOption::VALUE_NONE, 'Set this flag to include RabbitMQ for your environment.')
+            ->addOption('redis', null, InputOption::VALUE_NONE, 'Set this flag to include Redis for your environment.');
     }
 
     /**
@@ -274,7 +276,8 @@ class SpinCommand extends AbstractSpinnerCommand
                 $this->ports['mailcatcher_smtp'],
                 $this->ports['mailcatcher_web'],
                 $this->ports['rabbitmq'],
-                $this->ports['rabbitmq_management']
+                $this->ports['rabbitmq_management'],
+                $this->ports['redis']
             )
         );
     }
@@ -311,6 +314,20 @@ class SpinCommand extends AbstractSpinnerCommand
             ) && !is_dir($concurrentDirectory)
         ) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+        if (
+            !mkdir(
+                directory: $concurrentDirectory = $this->config->getProxyDirectory() . '/html',
+                recursive: true
+            ) && !is_dir($concurrentDirectory)
+        ) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+
+        $errorPageSource = $this->config->getConfigFileContents('proxy/html/502.html');
+
+        if ($errorPageSource) {
+            file_put_contents($this->config->getProxyDirectory() . '/html/502.html', $errorPageSource);
         }
     }
 

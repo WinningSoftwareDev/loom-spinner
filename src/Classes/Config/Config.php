@@ -66,9 +66,6 @@ class Config
         return is_string($defaultPhpVersion) ? (float) $defaultPhpVersion : 8.4;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function isServerEnabled(InputInterface $input): bool
     {
         if ($input->getOption('disable-server')) {
@@ -90,9 +87,6 @@ class Config
         return (bool) $this->getEnvironmentOption('php', 'xdebug');
     }
 
-    /**
-     * @throws \Exception
-     */
     public function isDatabaseEnabled(InputInterface $input): bool
     {
         if ($input->getOption('disable-database')) {
@@ -102,9 +96,6 @@ class Config
         return (bool) $this->getEnvironmentOption('database', 'enabled');
     }
 
-    /**
-     * @throws \Exception
-     */
     public function isMailcatcherEnabled(InputInterface $input): bool
     {
         if ($input->getOption('mailcatcher')) {
@@ -114,9 +105,6 @@ class Config
         return (bool) $this->getEnvironmentOption('mailcatcher', 'enabled');
     }
 
-    /**
-     * @throws \Exception
-     */
     public function isRabbitMQEnabled(InputInterface $input): bool
     {
         if ($input->getOption('rabbitmq')) {
@@ -126,9 +114,15 @@ class Config
         return (bool) $this->getEnvironmentOption('rabbitmq', 'enabled');
     }
 
-    /**
-     * @throws \Exception
-     */
+    public function isRedisEnabled(InputInterface $input): bool
+    {
+        if ($input->getOption('redis')) {
+            return true;
+        }
+
+        return (bool) $this->getEnvironmentOption('redis', 'enabled');
+    }
+
     public function getRabbitMQManagementPort(InputInterface $input): ?int
     {
         $managementPort = $this->getEnvironmentOption('rabbitmq', 'managementPort');
@@ -140,15 +134,10 @@ class Config
         return null;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getDatabaseDriver(InputInterface $input): ?string
     {
-        $databaseDriver = $input->getOption('database') ?? null;
-
-        if (is_string($databaseDriver)) {
-            return $databaseDriver;
+        if (is_string($input->getOption('database'))) {
+            return $input->getOption('database');
         }
 
         $defaultDatabaseDriver = $this->getEnvironmentOption('database', 'driver');
@@ -162,16 +151,12 @@ class Config
 
     public function getNodeVersion(InputInterface $input): ?int
     {
-        $nodeVersion = $input->getOption('node') ?? null;
-
-        if (is_numeric($nodeVersion)) {
-            return (int) $nodeVersion;
+        if (is_numeric($input->getOption('node'))) {
+            return (int) $input->getOption('node');
         }
 
-        $defaultNodeVersion = $this->getEnvironmentOption('node', 'version');
-
-        if (is_numeric($defaultNodeVersion)) {
-            return (int) $defaultNodeVersion;
+        if (is_numeric($this->getEnvironmentOption('node', 'version'))) {
+            return (int) $this->getEnvironmentOption('node', 'version');
         }
 
         return null;

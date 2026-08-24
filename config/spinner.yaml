@@ -16,3 +16,5 @@ options:
     rabbitmq:
       enabled: true
       managementPort: 15672
+    redis:
+      enabled: true

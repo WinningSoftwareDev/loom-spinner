@@ -8,6 +8,7 @@ services:
     volumes:
       - ./conf.d:/etc/nginx/conf.d:cached
       - ./certs:/etc/nginx/certs
+      - ./html/502.html:/usr/share/nginx/html/502.html:ro
     networks:
       - spinner-net
 

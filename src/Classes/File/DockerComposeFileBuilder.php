@@ -21,7 +21,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function build(InputInterface $input): self
     {
@@ -61,6 +61,13 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
             $volumes .= "\n rabbitmq_data:";
         }
 
+        if ($this->config->isRedisEnabled($input)) {
+            $this->addRedisConfig();
+            $volumes .= "\n redis_data:";
+        }
+
+
+
         if (!empty($volumes)) {
             $this->content .= "\n\nvolumes:" . $volumes . "\n\n";
         }
@@ -71,7 +78,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function addNginxConfig(): void
     {
@@ -92,7 +99,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function addSqliteDatabaseConfig(): void
     {
@@ -105,7 +112,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function addMysqlDatabaseConfig(): void
     {
@@ -116,7 +123,7 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
         $rootPassword = $this->config->getEnvironmentOption('database', 'rootPassword');
 
         if (!is_string($rootPassword) || $rootPassword === '') {
-            throw new \Exception('The root database password is invalid.');
+            throw new \RuntimeException('The root database password is invalid.');
         }
 
         $mysqlConfig = str_replace('services:', '', $mysqlConfig);
@@ -126,12 +133,12 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function addMailcatcherConfig(): void
     {
         if (!$mailcatcherConfig = $this->config->getConfigFileContents('mailcatcher.yaml')) {
-            throw new \Exception('Could not locate the default Mailcatcher configuration file.');
+            throw new \RuntimeException('Could not locate the default Mailcatcher configuration file.');
         }
 
         $mailcatcherConfig = str_replace('services:', '', $mailcatcherConfig);
@@ -156,15 +163,29 @@ class DockerComposeFileBuilder extends AbstractFileBuilder
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException
+     */
+    private function addRedisConfig(): void
+    {
+        if (!$redisConfig = $this->config->getConfigFileContents('redis.yaml')) {
+            throw new \RuntimeException('Could not locate the default Redis configuration file.');
+        }
+
+        $redisConfig = str_replace(array('services:', '${REDIS_PORT}'), array('', (string)$this->ports['redis']), $redisConfig);
+        $this->content .= $redisConfig;
+    }
+
+    /**
+     * @throws \RuntimeException
      */
     private function addNetworks(): void
     {
         if (!$networksConfig = $this->config->getConfigFileContents('network.yaml')) {
-            throw new \Exception('Could not locate the default network configuration file.');
+            throw new \RuntimeException('Could not locate the default network configuration file.');
         }
 
         $this->addNewLine();
         $this->content .= $networksConfig;
     }
+
 }
